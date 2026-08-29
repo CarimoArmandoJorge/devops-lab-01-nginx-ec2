@@ -57,6 +57,14 @@ systemd — no manual restart was required.
 - AWS Security Groups as a network firewall layer
 - Difference between stopping and terminating an EC2 instance (cost implications)
 
-## Next Steps
-- Automate this setup with a Bash script (Phase 2)
-- Recreate this infrastructure as code using Terraform(Phase 21)
+## Bash Automation
+Added `check-disk.sh`, a simple script to check root disk usage.
+
+**Bug found and fixed:** initial script failed with `df-h: command not found`
+due to a missing space between `df` and `-h`. This highlighted how Bash
+treats commands as exact strings — a single missing space breaks execution.
+
+**Concepts practiced:**
+- Shebang (`#!/bin/bash`) defines the interpreter
+- File permissions (`chmod +x`) control whether a script can execute
+- Debugging with `cat` to inspect actual file contents
