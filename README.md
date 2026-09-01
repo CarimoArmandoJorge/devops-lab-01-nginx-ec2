@@ -57,7 +57,7 @@ systemd — no manual restart was required.
 - AWS Security Groups as a network firewall layer
 - Difference between stopping and terminating an EC2 instance (cost implications)
 
-## Bash Automation
+## Bonus: Bash Automation
 Added `check-disk.sh`, a script that checks root disk usage and alerts
 when usage exceeds a defined threshold.
 
@@ -80,3 +80,19 @@ if [ "$USAGE" -gt "$LIMIT" ]; then
 else
     echo "Disk usage OK."
 fi
+```
+
+## Bonus: Healthcheck Script
+Added `healthcheck.sh`, which verifies both that the Nginx service is
+running and that it responds with HTTP 200 using functions and exit codes
+so the script can be consumed by other automation (e.g. CI/CD or monitoring).
+
+**Test performed:** manually stopped Nginx (`systemctl stop nginx`) to confirm
+the script correctly detected the failure, printed `FAIL`, and returned a
+non-zero exit code (1). Restarted the service and confirmed recovery
+(exit code 0).
+
+**Concepts practiced:**
+- Bash functions for reusable logic;
+- Exit codes (`0` = success, non-zero = failure) as the standard way scripts communicate status to other automation;
+- `curl` for HTTP-level health verification (not just process status).
