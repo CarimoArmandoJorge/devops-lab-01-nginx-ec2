@@ -48,7 +48,7 @@ systemd — no manual restart was required.
   the system PATH. Resolved by connecting through Git Bash instead, which
   ships with a working SSH client.
 - Had to update the AWS Security Group to open port 80, since only port 22
-  (SSH) was allowed by default — the browser request would otherwise hang.
+  (SSH) was allowed by default the browser request would otherwise hang.
 
 ## What I Learned
 - Linux permissions model (owner/group/other, `rwx`)
@@ -58,13 +58,25 @@ systemd — no manual restart was required.
 - Difference between stopping and terminating an EC2 instance (cost implications)
 
 ## Bash Automation
-Added `check-disk.sh`, a simple script to check root disk usage.
+Added `check-disk.sh`, a script that checks root disk usage and alerts
+when usage exceeds a defined threshold.
 
-**Bug found and fixed:** initial script failed with `df-h: command not found`
-due to a missing space between `df` and `-h`. This highlighted how Bash
-treats commands as exact strings — a single missing space breaks execution.
+**Evolution of the script:**
+1. First version: printed raw disk usage with `df -h /`.
+2. Bug found and fixed: initial script failed with `df-h: command not found`
+   due to a missing space between `df` and `-h`. This highlighted how Bash
+   treats commands as exact strings a single missing space breaks execution.
+3. Second version: added variables and a conditional to turn the script into
+   a real monitoring check it now extracts the disk usage percentage with
+   `awk`, stores it in a variable, and compares it against a threshold using
+   an `if` statement, printing a warning only when usage is too high.
 
-**Concepts practiced:**
-- Shebang (`#!/bin/bash`) defines the interpreter
-- File permissions (`chmod +x`) control whether a script can execute
-- Debugging with `cat` to inspect actual file contents
+```bash
+LIMIT=80
+USAGE=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
+
+if [ "$USAGE" -gt "$LIMIT" ]; then
+    echo "WARNING: disk usage above ${LIMIT}%!"
+else
+    echo "Disk usage OK."
+fi
