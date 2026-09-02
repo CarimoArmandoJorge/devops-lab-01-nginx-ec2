@@ -96,3 +96,21 @@ non-zero exit code (1). Restarted the service and confirmed recovery
 - Bash functions for reusable logic;
 - Exit codes (`0` = success, non-zero = failure) as the standard way scripts communicate status to other automation;
 - `curl` for HTTP-level health verification (not just process status).
+
+## Bonus: Deployment Automation
+Added `deploy.sh`, which automates a full deployment cycle: copying a new
+version of the site, reloading Nginx, and validating success by running
+`healthcheck.sh` automatically.
+
+**Key practice: `set -e`** ensures the script stops immediately if any
+step fails, instead of silently continuing with a broken deployment. This
+mirrors real-world CI/CD pipeline behavior, where a single failed step
+should halt the process rather than proceed silently.
+
+**Verified end-to-end:** ran the script, confirmed all 3 steps succeeded,
+and visually validated the new page was live in the browser.
+
+**Concepts practiced:**
+- `set -e` for fail-fast automation
+- Chaining previously built scripts (`healthcheck.sh`) into a larger workflow
+- Basic deployment sequence: deploy → reload → validate
