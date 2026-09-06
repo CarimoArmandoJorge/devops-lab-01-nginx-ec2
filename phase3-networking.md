@@ -24,3 +24,25 @@ listening on it — not a fixed/reserved state.
 ## Recovery
 Restarted Nginx (`systemctl start nginx`), confirmed port 80 reappeared in
 `ss -tulnp`, and validated recovery with `curl -v http://localhost`.
+
+
+## DNS Resolution
+Used `dig` to inspect DNS resolution behavior.
+
+**Normal resolution** (`dig google.com`):
+- Returned an `ANSWER SECTION` with multiple `A` records (IPv4 addresses)
+  for the same domain a form of DNS round-robin, used for load
+  distribution and resilience (if one server fails, other IPs still resolve
+  and respond).
+- TTL (Time To Live) indicates how long a resolver may cache the answer
+  before querying again.
+
+**Non-existent domain** (`dig <random-nonexistent-domain>`):
+- No `ANSWER SECTION` was returned.
+- Instead, an `AUTHORITY SECTION` with an `SOA` (Start of Authority) record
+  appeared, and the header showed `status: NXDOMAIN` the standard DNS
+  code indicating the domain does not exist at all.
+
+**Reference:**
+- Normal resolution → `ANSWER SECTION` with `A` records.
+- Non-existent domain → `AUTHORITY SECTION` + `SOA` + `status: NXDOMAIN`.
