@@ -11,7 +11,7 @@ Manually stopped Nginx (`systemctl stop nginx`) and confirmed:
   "Connection refused".
 
 This demonstrated that a port is only "open" while a process is actively
-listening on it — not a fixed/reserved state.
+listening on it not a fixed/reserved state.
 
 ## Error Pattern Reference
 - **Connection refused / Failed to connect** → nothing is listening on that
@@ -66,3 +66,24 @@ itself:
 - Instant "connection refused" → service-level issue (nothing listening).
 - Slow timeout → network/firewall-level issue (traffic blocked before
   reaching the service).
+
+## TLS Certificate Inspection
+Used `openssl s_client` combined with `openssl x509` to inspect certificate
+validity dates directly from the command line, without a browser.
+
+```bash
+echo | openssl s_client -connect <host>:443 -servername <host> 2>/dev/null | openssl x509 -noout -dates
+```
+
+**Valid certificate** (`google.com`): showed a short validity window
+(under 3 months), consistent with modern practice of frequent automated
+certificate renewal to limit exposure if a certificate is ever compromised.
+
+**Expired certificate** (`expired.badssl.com`, a public site made for this
+kind of testing): `notAfter` date was in 2015. The site still responded on
+port 443 (the server itself was up), but the browser blocked the connection
+entirely with a "connection not private" warning.
+
+**Key takeaway:** an expired certificate is a distinct failure category from
+a service being down the service can be fully operational while TLS trust
+is broken, and browsers treat that as unsafe rather than unavailable.
