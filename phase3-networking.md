@@ -46,3 +46,23 @@ Used `dig` to inspect DNS resolution behavior.
 **Reference:**
 - Normal resolution → `ANSWER SECTION` with `A` records.
 - Non-existent domain → `AUTHORITY SECTION` + `SOA` + `status: NXDOMAIN`.
+
+## Simulating "Application Can't Reach Database"
+Used `nc -zv` (Linux) and `Test-NetConnection` (Windows/PowerShell) to test
+port connectivity from two different vantage points.
+
+**From inside the server** (`nc -zv localhost 5432`):
+- Immediate response: `Connection refused`.
+- Meaning: the network path is fine, but nothing is listening on that port
+  (e.g. database service down, or wrong port configured).
+
+**From outside, over the internet** (`Test-NetConnection -Port 5432`):
+- Slow response, ending in timeout (`TcpTestSucceeded: False`).
+- Meaning: traffic never reached the service at all blocked upstream by
+  the AWS Security Group (only ports 22 and 80 are allowed).
+
+**Key takeaway:** the *speed and type* of failure is a diagnostic signal by
+itself:
+- Instant "connection refused" → service-level issue (nothing listening).
+- Slow timeout → network/firewall-level issue (traffic blocked before
+  reaching the service).
