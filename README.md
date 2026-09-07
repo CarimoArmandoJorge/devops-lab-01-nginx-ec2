@@ -1,5 +1,5 @@
 
-# DevOps Lab 01 — Nginx on AWS EC2 with systemd Resilience
+# DevOps Lab 01 — Cloud Infrastructure & Automation Portifolio
 
 
 ## Objective
