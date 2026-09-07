@@ -1,4 +1,3 @@
-
 # DevOps Lab 01 — Cloud Infrastructure & Automation Portifolio
 
 
