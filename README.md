@@ -1,5 +1,4 @@
-
-# DevOps Lab 01 - AWS Infrastructure Automation Project
+# DevOps Lab 01 — Cloud Infrastructure & Automation Portifolio
 
 
 ## Objective
