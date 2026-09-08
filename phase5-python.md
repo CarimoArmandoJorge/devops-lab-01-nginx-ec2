@@ -25,3 +25,25 @@ crashing the script.
 exception and returned exit code 1; restarted Nginx and confirmed recovery
 with exit code 0, same behavior as the Bash version, implemented with
 Python's exception handling model instead of shell exit codes.
+
+## AWS Automation with boto3
+Installed `boto3` and wrote `list-instances.py` to interact directly with
+the AWS EC2 API from Python.
+
+**Authentication:** used an IAM Role attached to the EC2 instance
+(`AmazonEC2ReadOnlyAccess`) instead of hardcoded access keys following the
+principle of least privilege (read-only, since the script only lists
+resources) and avoiding credentials stored in files or code.
+
+**Evolution:**
+1. First version: listed all EC2 instances in the account regardless of
+   state, using `describe_instances()`.
+2. Second version: used a server-side filter
+   (`Filters=[{"Name": "instance-state-name", "Values": ["running"]}]`) to
+   return only running instances directly from the API more efficient
+   than fetching everything and filtering in Python, especially at scale.
+
+**Key takeaway:** cloud SDKs let you query and filter infrastructure state
+programmatically the same kind of visibility that helps catch forgotten
+resources (a common source of unexpected cloud costs) before they become a
+billing surprise.
